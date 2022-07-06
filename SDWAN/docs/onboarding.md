@@ -205,7 +205,7 @@ For each controller (VManage, VSmart and VBond), do the following.
 	```
 	request root-cert-chain install /home/admin/ROOTCA.pem 
 	```
-4. __Sign CSR__: Bring the CSR files from the Controllers to the ROOTCA Server and sign them. The signed certificates are the CRT files. 
+4. __Sign CSR__: Bring the CSR files from the Controllers to the ROOTCA Server and sign them. The signed certificates are the CRT files. Run the following script at the ROOT-CA server, change the variables as per your topology. The script will brinf the CSR files from the controller node, sign them and create a signed certificate as CRT file. 
 
 
 
@@ -251,6 +251,48 @@ openssl x509 \
 ```
 
 5. __Install signed Certificates__: __Vmanage UI -> configuration -> certificates -> Controllers -> install -> _paste CRT file contents_ -> install__ 
+
+## 5.4. Turn on Tunnels
+
+As the mutual authentication is finished, now the controller nodes can turn their tunnel interfaces. run the follwing config on the controller nodes. 
+
+### 5.4.1. VManage
+```
+conf t
+    vpn 0
+        int eth0
+            tunnel-interface
+            commit
+        !
+    !
+end 
+``` 
+### 5.4.2. VBond
+```
+conf t
+    vpn 0
+        int ge0/0
+            tunnel-interface
+                encap ipsec
+                allow-service all
+                allow-service netconf sshd
+                commit
+            !
+        !
+    !
+end 
+``` 
+### 5.4.1. VManage
+```
+conf t
+    vpn 0
+        int eth0
+            tunnel-interface
+            commit
+        !
+    !
+end 
+``` 
 
 # 6. VEdge Bring-up
 
